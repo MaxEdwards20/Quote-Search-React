@@ -12,7 +12,7 @@ interface Quote {
 function App() {
   const [quotes, setQuotes] = useState<[Quote]>([{ content: "", author: "" }]); // initial value
   const [searchParam, setSearchParam] = useState("");
-  const [firstView, setFirstView] = useState(true);
+  const [showRandom, setFirstView] = useState(true); // change view if this is false
   const [randomQuote, setRandomQuote] = useState<Quote>({
     content: "",
     author: "",
@@ -68,7 +68,7 @@ function App() {
 
   return (
     <div
-      className="container bg-primary"
+      className="container-fluid main_container d-flex bg-primary"
       style={{ width: "100%", height: "100%" }}
     >
       <div className="card-body">
@@ -80,7 +80,7 @@ function App() {
             onChange={handleSearchInput}
             onKeyDown={handleEnter}
             className="form-control"
-            placeholder="Search Quotes Here"
+            placeholder="Lincoln"
           ></input>
           <div className="input-group-prepend">
             <button
@@ -94,7 +94,7 @@ function App() {
         </div>
         <div className="list-group">
           <ul className="list-group">
-            {firstView ? (
+            {showRandom ? (
               <QuoteHolder
                 author={randomQuote.author}
                 content={randomQuote.content}
