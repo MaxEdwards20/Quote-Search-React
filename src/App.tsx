@@ -1,41 +1,76 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import reactLogo from "./assets/react.svg";
 import "./App.css";
-import { FormInput } from "./components/FormInput";
 import { QuoteHolder } from "./components/QuoteHolder";
 
 interface Quote {
   content: string;
-  author: string; // ? means this is optional
+  author: string;
+  id?: string;
 }
 
 function App() {
-  const [quotes, setQuotes] = useState([]);
+  const [quotes, setQuotes] = useState<[Quote]>([{ content: "", author: "" }]); // initial value
   const [searchParam, setSearchParam] = useState("");
+  const [firstView, setFirstView] = useState(true);
+  const [randomQuote, setRandomQuote] = useState<Quote>({
+    content: "",
+    author: "",
+  });
 
   function handleSearchClick() {
+    setFirstView(false); // remove random quote once user searches their own
     async function fetchData() {
       let url = "https://api.quotable.io/search/quotes?query=" + searchParam;
       const result = await fetch(url);
       let json = await result.json();
-      setQuotes(json.results);
+      if (json.results.length < 1) {
+        let m = {
+          content:
+            "Your query '" + searchParam + "' was unable to return anything.",
+          author: "Please try again",
+        };
+        setQuotes([m]);
+      } else {
+        setQuotes(json.results);
+      }
     }
     if (searchParam && searchParam.length > 0) {
       fetchData();
     }
   }
 
-  async function getRandomQuote() {
-    const result = await fetch("https://api.quotable.io/random");
-    return await result.json();
+  function getRandomQuote() {
+    async function fetchData() {
+      const result = await fetch("https://api.quotable.io/random");
+      let json = await result.json();
+      setRandomQuote({
+        content: json.content,
+        author: json.author,
+      });
+    }
+    fetchData();
   }
 
   function handleSearchInput(event: React.ChangeEvent<HTMLInputElement>) {
     setSearchParam(event.target.value);
   }
 
+  function handleEnter(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key == "Enter") {
+      handleSearchClick();
+    }
+  }
+
+  useEffect(() => {
+    getRandomQuote();
+  }, []);
+
   return (
-    <div className="card bg-primary" style={{ width: "100%" }}>
+    <div
+      className="container bg-primary"
+      style={{ width: "100%", height: "100%" }}
+    >
       <div className="card-body">
         <h1 className="card-title text-white"> Find a Quote </h1>
         <div className="input-group mb-3">
@@ -43,6 +78,7 @@ function App() {
             type="text"
             value={searchParam}
             onChange={handleSearchInput}
+            onKeyDown={handleEnter}
             className="form-control"
             placeholder="Search Quotes Here"
           ></input>
@@ -55,18 +91,23 @@ function App() {
               Search
             </button>
           </div>
-          <div>
-            {
-              <ul className="list-group">
-                {quotes.map((quote: Quote) => (
-                  <QuoteHolder
-                    author={quote.author}
-                    content={quote.content}
-                  ></QuoteHolder>
-                ))}
-              </ul>
-            }
-          </div>
+        </div>
+        <div className="list-group">
+          <ul className="list-group">
+            {firstView ? (
+              <QuoteHolder
+                author={randomQuote.author}
+                content={randomQuote.content}
+              ></QuoteHolder>
+            ) : (
+              quotes.map((quote: Quote) => (
+                <QuoteHolder
+                  author={quote.author}
+                  content={quote.content}
+                ></QuoteHolder>
+              ))
+            )}
+          </ul>
         </div>
       </div>
     </div>
