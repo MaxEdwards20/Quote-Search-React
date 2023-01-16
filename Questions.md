@@ -1,2 +1,2 @@
-- How can I make a holder for the quotes? It seems like this would be a separate component that is passed in boxes of other quotes
-- How do I setup the `docs` part of this config to work on github pages?
+- How can I get the main background to expand with the additional quotes
+- Why does my build not work? Should it have something else in the config?
