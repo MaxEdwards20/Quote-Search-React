@@ -78,7 +78,7 @@ function App() {
   return (
     <div
       className="container-fluid main_container d-flex bg-primary"
-      style={{ width: "100%", height: "100%" }}
+      style={{ width: "100%", height: "100%", overflow: "auto" }}
     >
       <div className="card-body">
         <h1 className="card-title text-white"> Find a Quote </h1>
