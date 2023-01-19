@@ -6,16 +6,19 @@ import { QuoteHolder } from "./components/QuoteHolder";
 interface Quote {
   content: string;
   author: string;
-  id?: string;
+  key: string;
 }
 
 function App() {
-  const [quotes, setQuotes] = useState<[Quote]>([{ content: "", author: "" }]); // initial value
+  const [quotes, setQuotes] = useState<[Quote]>([
+    { content: "", author: "", key: "" },
+  ]); // initial value
   const [searchParam, setSearchParam] = useState("");
   const [showRandom, setFirstView] = useState(true); // change view if this is false
   const [randomQuote, setRandomQuote] = useState<Quote>({
     content: "",
     author: "",
+    key: "",
   });
 
   function handleSearchClick() {
@@ -24,11 +27,14 @@ function App() {
       let url = "https://api.quotable.io/search/quotes?query=" + searchParam;
       const result = await fetch(url);
       let json = await result.json();
+      console.log(url);
+      console.log(json);
       if (json.results.length < 1) {
         let m = {
           content:
             "Your query '" + searchParam + "' was unable to return anything.",
           author: "Please try again",
+          key: "invalid",
         };
         setQuotes([m]);
       } else {
@@ -36,6 +42,7 @@ function App() {
       }
     }
     if (searchParam && searchParam.length > 0) {
+      // verify there is something in the input to use
       fetchData();
     }
   }
@@ -44,9 +51,11 @@ function App() {
     async function fetchData() {
       const result = await fetch("https://api.quotable.io/random");
       let json = await result.json();
+      console.log("Fetched random quote", json);
       setRandomQuote({
         content: json.content,
         author: json.author,
+        key: json.id,
       });
     }
     fetchData();
@@ -96,12 +105,14 @@ function App() {
           <ul className="list-group">
             {showRandom ? (
               <QuoteHolder
+                key={randomQuote.key}
                 author={randomQuote.author}
                 content={randomQuote.content}
               ></QuoteHolder>
             ) : (
               quotes.map((quote: Quote) => (
                 <QuoteHolder
+                  key={quote.key}
                   author={quote.author}
                   content={quote.content}
                 ></QuoteHolder>
