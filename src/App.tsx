@@ -24,11 +24,11 @@ function App() {
   function handleSearchClick() {
     async function fetchData() {
       setFirstView(false);
-      let url = "https://api.quotable.io/search/quotes?query=" + searchParam;
+      let url =
+        "https://usu-quotes-mimic.vercel.app/api/search?query=" + searchParam;
       const result = await fetch(url);
       let json = await result.json();
-      console.log(url);
-      console.log(json);
+
       if (json.results.length < 1) {
         let m = {
           content:
@@ -53,7 +53,6 @@ function App() {
         "https://usu-quotes-mimic.vercel.app/api/random"
       );
       let json = await result.json();
-      console.log("Fetched random quote", json);
       setRandomQuote({
         content: json.content,
         author: json.author,
@@ -74,7 +73,6 @@ function App() {
   }
 
   useEffect(() => {
-    console.log(firstView);
     if (firstView) {
       getRandomQuote();
     }
