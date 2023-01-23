@@ -6,24 +6,24 @@ import { QuoteHolder } from "./components/QuoteHolder";
 interface Quote {
   content: string;
   author: string;
-  key: string;
+  _id: string;
 }
 
 function App() {
   const [quotes, setQuotes] = useState<[Quote]>([
-    { content: "", author: "", key: "" },
+    { content: "", author: "", _id: "" },
   ]); // initial value
   const [searchParam, setSearchParam] = useState("");
-  const [showRandom, setFirstView] = useState(true); // change view if this is false
+  const [firstView, setFirstView] = useState(true); // change view if this is false
   const [randomQuote, setRandomQuote] = useState<Quote>({
     content: "",
     author: "",
-    key: "",
+    _id: "",
   });
 
   function handleSearchClick() {
-    setFirstView(false); // remove random quote once user searches their own
     async function fetchData() {
+      setFirstView(false);
       let url = "https://api.quotable.io/search/quotes?query=" + searchParam;
       const result = await fetch(url);
       let json = await result.json();
@@ -34,7 +34,7 @@ function App() {
           content:
             "Your query '" + searchParam + "' was unable to return anything.",
           author: "Please try again",
-          key: "invalid",
+          _id: "invalid",
         };
         setQuotes([m]);
       } else {
@@ -49,13 +49,15 @@ function App() {
 
   function getRandomQuote() {
     async function fetchData() {
-      const result = await fetch("https://api.quotable.io/random");
+      const result = await fetch(
+        "https://usu-quotes-mimic.vercel.app/api/random"
+      );
       let json = await result.json();
       console.log("Fetched random quote", json);
       setRandomQuote({
         content: json.content,
         author: json.author,
-        key: json.id,
+        _id: json._id,
       });
     }
     fetchData();
@@ -72,7 +74,10 @@ function App() {
   }
 
   useEffect(() => {
-    getRandomQuote();
+    console.log(firstView);
+    if (firstView) {
+      getRandomQuote();
+    }
   }, []);
 
   return (
@@ -103,16 +108,16 @@ function App() {
         </div>
         <div className="list-group">
           <ul className="list-group">
-            {showRandom ? (
+            {firstView ? (
               <QuoteHolder
-                key={randomQuote.key}
+                key={randomQuote._id}
                 author={randomQuote.author}
                 content={randomQuote.content}
               ></QuoteHolder>
             ) : (
               quotes.map((quote: Quote) => (
                 <QuoteHolder
-                  key={quote.key}
+                  key={quote._id}
                   author={quote.author}
                   content={quote.content}
                 ></QuoteHolder>
