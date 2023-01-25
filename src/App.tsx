@@ -79,10 +79,7 @@ function App() {
   }, []);
 
   return (
-    <div
-      className="container-fluid main_container d-flex bg-primary"
-      style={{ width: "100%", height: "100%", overflow: "auto" }}
-    >
+    <div className="container-fluid main_container d-flex bg-primary">
       <div className="card-body">
         <h1 className="card-title text-white"> Find a Quote </h1>
         <div className="input-group mb-3">
@@ -92,7 +89,7 @@ function App() {
             onChange={handleSearchInput}
             onKeyDown={handleEnter}
             className="form-control"
-            placeholder="Lincoln"
+            placeholder="Enter Author Here"
           ></input>
           <div className="input-group-prepend">
             <button
